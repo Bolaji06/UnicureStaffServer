@@ -1,0 +1,91 @@
+SELECT * FROM personal_info;
+
+
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+const app = express();
+app.use(session({
+    secret: 'Bolaji the fullstack dev',
+    saveUninitialized: true, //  a new session will be created and saved to the session store, 
+    //even if it hasn't been modified (i.e., no session data has been set).
+    resave: false, // the session store will only be updated 
+    // if the session data was modified during the request.
+    cookie: {
+        maxAge: 60000 * 60
+    }
+}))
+app.use(cookieParser("userId"));
+
+app.use('/', (req, res, next) => {
+    res.cookie("user", "John Doe", { maxAge: 60000 * 60, signed: true});
+    // req.session.visited = true; // avoid regeneration of sessionID
+    // req.sessionStore.get(req.sessionID, (err, data) => {
+    //     if (err) throw err;
+    //     console.log(data);
+    // })
+    next();
+});
+app.get('/set', (req, res) => {
+    res.send('Setting session');
+    req.session.visited = true;
+    console.log(req.session)
+    console.log(req.sessionID);
+})
+app.get('/set-cookie', (req, res) => {
+    if (req.signedCookies.user){
+        res.send('Welcome to the homepage ' + req.signedCookies.user)
+    }else{
+        res.send('Welcome to the login in page');
+    }
+});
+app.get('/get-cookie', (req, res) => {
+    if (req.signedCookies.user){
+        res.send('Here is your profile ' + req.signedCookies.uer)
+    }else{
+        res.send('You have no cookie')
+    }
+    //console.log(req.signedCookies);
+    //console.log(req.headers.cookie)
+    console.log(req.sessionID);
+})
+
+app.listen(2000, () => {
+    console.log('Server running...2000')
+})
+
+
+
+const express = require('express');
+const cookieParser = require('cookie-parser');
+
+const app = express();
+
+app.use(cookieParser("userId"));
+
+app.use('/set', (req, res, next) => {
+    res.cookie("id", "loginId", { maxAge: 4000 * 10, signed: true});
+    next()
+});
+app.get('/set', (req, res) => {
+    if (req.cookies){
+        res.send('You have a cookie');
+    }else {
+        res.send('You have no cookie');
+    }
+});
+
+app.get('/get', (req, res) => {
+    if (req.cookies){
+        res.send('You have a cookie here too')
+        console.log(req.signedCookies.id)
+        console.log(req.headers.cookie)
+    }else{ 
+        res.send('No cookies')
+    }
+});
+
+app.listen(2000, () => {
+    console.log('Server running...2000')
+})
