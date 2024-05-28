@@ -3,6 +3,8 @@
 
 .env
 
-.vscode
+/.vscode
 
-prisma
+/prisma
+
+.env*.local
