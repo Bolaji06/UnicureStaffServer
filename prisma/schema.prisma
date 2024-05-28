@@ -42,8 +42,14 @@ model admin {
   password String @db.VarChar(100)
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model tag {
   id Int @id @default(autoincrement())
   isApproved Boolean
   name String @db.VarChar(20)
+  role Role @default(ADMIN)
 }

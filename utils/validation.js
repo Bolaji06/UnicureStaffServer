@@ -206,10 +206,36 @@ const adminRegistrationSchema = {
   },
 };
 
+const adminLogin = {
+  username: {
+    notEmpty: {
+      errorMessage: "username cannot be empty"
+    },
+    isLength: {
+      option: {
+        min: 2,
+        max: 20
+      },
+    }
+  },
+  password: {
+    notEmpty: {
+      errorMessage: 'password cannot be empty'
+    },
+    isLength: {
+      option: {
+        min: 5,
+        max: 20,
+      }
+    }
+  }
+}
+
 module.exports = {
   paramValidation,
   queryValidation,
   addPersonalInfoValidation,
   addWorkInfoValidation,
   adminRegistrationSchema,
+  adminLogin,
 };

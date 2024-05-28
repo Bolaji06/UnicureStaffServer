@@ -133,15 +133,17 @@ router.post(
           emergency_contact,
           email,
         ]);
-        res.status(201).json({ success: true, message: "Staff Personal info created!" });
+        res
+          .status(201)
+          .json({ success: true, message: "Staff Personal info created!" });
       } else {
         res.status(400).json(result.array());
-        
       }
     } catch (err) {
       console.log(err);
-      res.status(500).json({ success: true, message: "Failed to create staff!"})
-      
+      res
+        .status(500)
+        .json({ success: true, message: "Failed to create staff!" });
     }
   }
 );
@@ -220,9 +222,11 @@ router.patch("/admin/p/:card_number/edit", async (req, res) => {
           AND w.card_number = $${values.length + 1}
       `;
     values.push(card_number);
-    const response = await db.oneOrNone(query, values);
+    db.on
+    const response = await db.manyOrNone(query, values);
+    console.log(response)
     if (response) {
-      res.status(200).json({ success: true, message: 'Update success' });
+      res.status(200).json({ success: true, message: "Personal Info updated successfully" });
     } else {
       res.status(400).json({ success: false, message: "Failed to update" });
     }
@@ -257,14 +261,14 @@ router.patch("/admin/w/:card_number/edit", async (req, res) => {
         AND w.card_number = $${values.length + 1}
       `;
     values.push(card_number);
-    const response = await db.oneOrNone(query, values);
-    if (response){
-      res.status(200).json({ message: 'Update success'});
-    }else {
-      res.status(400).json({ success: false, message: 'Fail to update'})
-    } 
+    const response = await db.manyOrNone(query, values);
+    if (response) {
+      res.status(200).json({ success: true, message: "Work Info updated successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Fail to update" });
+    }
   } catch (err) {
-    res.status(500).json({error: 'Internal Server Error'})
+    res.status(500).json({ error: "Internal Server Error" });
     throw new Error(err);
   }
 });
@@ -281,14 +285,21 @@ router.delete("/staff/deleteRecord/:card_number", async (req, res) => {
     `;
   try {
     const response = await db.query(deleteQuery, [card_number]);
-    if (!response) res.status(400).json({ success: false, message: "Failed to delete record" });
+    if (!response)
+      res
+        .status(400)
+        .json({ success: false, message: "Failed to delete record" });
     else {
-      res.status(200).json({ success: true, message: 'Record deleted successfully' });
+      res
+        .status(200)
+        .json({ success: true, message: "Record deleted successfully" });
     }
     console.log(response);
     return response;
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Internal Server Error Ocurred' });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error Ocurred" });
     throw new Error(err);
   }
 });
