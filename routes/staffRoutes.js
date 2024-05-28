@@ -21,6 +21,9 @@ const {
 } = require("../utils/validation");
 
 // count total number of personal_info records
+router.get("/", (req, res) => {
+  res.send("Staff Homepage");
+});
 router.use("/staff/all", async (req, res, next) => {
   try {
     const count = await db.any(countRows);
@@ -222,11 +225,13 @@ router.patch("/admin/p/:card_number/edit", async (req, res) => {
           AND w.card_number = $${values.length + 1}
       `;
     values.push(card_number);
-    db.on
+    db.on;
     const response = await db.manyOrNone(query, values);
-    console.log(response)
+    console.log(response);
     if (response) {
-      res.status(200).json({ success: true, message: "Personal Info updated successfully" });
+      res
+        .status(200)
+        .json({ success: true, message: "Personal Info updated successfully" });
     } else {
       res.status(400).json({ success: false, message: "Failed to update" });
     }
@@ -263,7 +268,9 @@ router.patch("/admin/w/:card_number/edit", async (req, res) => {
     values.push(card_number);
     const response = await db.manyOrNone(query, values);
     if (response) {
-      res.status(200).json({ success: true, message: "Work Info updated successfully" });
+      res
+        .status(200)
+        .json({ success: true, message: "Work Info updated successfully" });
     } else {
       res.status(400).json({ success: false, message: "Fail to update" });
     }
