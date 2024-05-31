@@ -56,7 +56,7 @@ router.post(
         } catch (err) {
           res.status(500).json({ error: "Internal Server Error" });
           await prisma.$disconnect(); // disconnect from database if there after error
-          console.log(e);
+          console.log(err);
           process.exit(1);
         }
       }

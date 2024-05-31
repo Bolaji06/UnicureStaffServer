@@ -1,3 +1,5 @@
+
+
 const paramValidation = {
   card_number: {
     in: ["params"], // optional (By default, all specified fields are validated in all request locations)
@@ -209,27 +211,48 @@ const adminRegistrationSchema = {
 const adminLogin = {
   username: {
     notEmpty: {
-      errorMessage: "username cannot be empty"
+      errorMessage: "username cannot be empty",
     },
     isLength: {
       option: {
         min: 2,
-        max: 20
+        max: 20,
       },
-    }
+    },
   },
   password: {
     notEmpty: {
-      errorMessage: 'password cannot be empty'
+      errorMessage: "password cannot be empty",
     },
     isLength: {
       option: {
         min: 5,
         max: 20,
-      }
-    }
-  }
-}
+      },
+    },
+  },
+};
+const forgotten = {
+  email: {
+    notEmpty: {
+      errorMessage: "Email cannot be empty",
+    },
+    isEmail: true,
+  },
+};
+const resetPassword = {
+  newPassword: {
+    notEmpty: {
+      errorMessage: "Field cannot be empty",
+    },
+    isLength: {
+      option: {
+        min: 5,
+        max: 20,
+      },
+    },
+  },
+};
 
 module.exports = {
   paramValidation,
@@ -238,4 +261,6 @@ module.exports = {
   addWorkInfoValidation,
   adminRegistrationSchema,
   adminLogin,
+  forgotten,
+  resetPassword,
 };
