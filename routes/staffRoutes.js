@@ -170,6 +170,10 @@ router.post(
 
     const result = validationResult(req);
 
+    if (!result.isEmpty()) {
+      return res.status(400).json(result.array());
+    }
+
     try {
       if (result.isEmpty()) {
         await db.none(addWorkInfoQuery, [
@@ -185,10 +189,15 @@ router.post(
         ]);
         res.status(201).json({ success: true, message: "Work info Created" });
       } else {
-        res.status(400).json(result.array());
+        res
+          .status(400)
+          .json({ success: false, message: "Fail to create work info" });
       }
     } catch (err) {
       console.log(err);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
   }
 );

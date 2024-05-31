@@ -230,6 +230,14 @@ const adminLogin = {
     }
   }
 }
+const forgotten = {
+  email: {
+    notEmpty: {
+      errorMessage: 'Email cannot be empty'
+    },
+    isEmail: true,
+  }
+}
 
 module.exports = {
   paramValidation,
@@ -238,4 +246,5 @@ module.exports = {
   addWorkInfoValidation,
   adminRegistrationSchema,
   adminLogin,
+  forgotten
 };

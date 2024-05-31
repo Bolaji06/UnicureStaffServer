@@ -4,6 +4,8 @@ const registration = require("./routes/registration");
 const admin = require("./routes/admin");
 const login = require("./routes/login");
 const dashboard = require("./routes/dashboard");
+const forgotten = require("./routes/forgotten")
+const resetPassword = require("./routes/reset-password")
 
 const app = express();
 
@@ -15,6 +17,9 @@ app.use(registration);
 app.use(admin);
 app.use(login);
 app.use(dashboard);
+app.use(forgotten);
+app.use(resetPassword);
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
