@@ -1,12 +1,20 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
 const bcrypt = require("bcrypt");
+const { checkSchema, validationResult } = require("express-validator");
+const { resetPassword } = require("../utils/validation");
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.post("/reset", async (req, res) => {
+router.post("/reset", checkSchema(resetPassword), async (req, res) => {
   const { token, newPassword } = req.body;
+
+  const result = validationResult(req);
+
+  if (!result.isEmpty()){
+    res.status(400).json(result.array());
+  }
   try {
     const user = await prisma.admin.findUnique({
       where: {

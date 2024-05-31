@@ -45,7 +45,7 @@ router.post("/forgotten", checkSchema(forgotten), async (req, res) => {
     const message =
       "You receiving this message because you're about to reset your password";
     const html = ` <h3>Click on the verification button below</h3>
-        <a href="http://localhost:7000/reset-password?token=${token}">
+        <a href="https://localhost:7000/reset-password?token=${token}">
           <button>Verify Email</button>
         </a>`;
     sendEmail(email, subject, message, html);
