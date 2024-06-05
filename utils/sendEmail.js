@@ -16,7 +16,7 @@ async function sendEmail(email, subject, message, html){
             }
         });
         const mailOptions = {
-            from: "joshspencer0603@gmail.com",
+            from: process.env.HOST_EMAIL,
             to: email,
             subject: subject,
             title: "You're about to reset your password, click the link below",

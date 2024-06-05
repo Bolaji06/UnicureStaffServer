@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db/dbconfig");
+const { PrismaClient } = require("@prisma/client");
 const {
   selectByCardNumber,
   selectAllStaff,
@@ -19,6 +20,13 @@ const {
   addPersonalInfoValidation,
   addWorkInfoValidation,
 } = require("../utils/validation");
+const { authenticate } = require("../middleware/auth");
+
+const cookieParser = require("cookie-parser");
+
+router.use(cookieParser("user"));
+
+const prisma = new PrismaClient();
 
 // count total number of personal_info records
 router.get("/", (req, res) => {
@@ -36,8 +44,12 @@ router.use("/staff/all", async (req, res, next) => {
 });
 
 // get all staff
-router.get("/staff/all".trim(), async (req, res) => {
+router.get("/staff/all".trim(), authenticate, async (req, res) => {
+  //console.log(req.user);
   res.type("application/json");
+  if (!req.signedCookies) {
+    res.send("Your session has expired");
+  }
 
   try {
     const response = await db.any(selectAllStaff);
@@ -176,28 +188,48 @@ router.post(
 
     try {
       if (result.isEmpty()) {
-        await db.none(addWorkInfoQuery, [
-          personal_info_id,
-          department,
-          job_title,
-          date_hired,
-          account_number,
-          card_number,
-          position_status,
-          approved,
-          salary,
-        ]);
-        res.status(201).json({ success: true, message: "Work info Created" });
-      } else {
-        res
-          .status(400)
-          .json({ success: false, message: "Fail to create work info" });
+        // const dateString = new Date(
+        //   `${date_hired}T00:00:00.000Z`
+        // ).toISOString();
+
+        const isCardNumber = await prisma.work_info.findUnique({
+          where: {
+            card_number: card_number,
+          },
+        });
+        if (isCardNumber) {
+          res.status(400).json({
+            success: false,
+            message: `card number (${card_number}) already exists`,
+          });
+        } else if (!isCardNumber) {
+          await prisma.work_info.create({
+            data: {
+              personal_info_id: personal_info_id,
+              department: department,
+              job_title: job_title,
+              date_hired: date_hired,
+              account_number: account_number,
+              card_number: card_number,
+              position_status: position_status,
+              approved: approved,
+              salary: salary,
+            },
+          });
+          res.status(201).json({ success: true, message: "work info created" });
+        } else {
+          res
+            .status(400)
+            .json({ success: false, message: "failed to create work info" });
+        }
       }
     } catch (err) {
       console.log(err);
       res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });
+    } finally {
+      await prisma.$disconnect();
     }
   }
 );
