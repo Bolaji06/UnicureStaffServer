@@ -1,7 +1,7 @@
 
 const express = require("express");
 const router = express.Router();
-const { authenticate } = require('../utils/auth')
+const { authenticate } = require('../middleware/auth')
 
 router.get('/dashboard', authenticate, (req, res) => {
     res.send("You have access");
@@ -12,4 +12,4 @@ router.get('/protected', (req, res) => {
     res.send('This is a protected routes')
 })
 
-module.exports = router
+module.exports = router;

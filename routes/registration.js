@@ -31,11 +31,10 @@ router.post(
     if (result.isEmpty()) {
       // if username and email already exists
       if (isUser.length) {
-        res.status(400).json({
+       return res.status(400).json({
           success: false,
           message: "username or email already exist ",
-        });
-        return;
+        });  
       } else {
         // hash the password
         const saltRound = 10;
