@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db/dbconfig");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require('../utils/prismaClient')
 const {
   selectByCardNumber,
   selectAllStaff,
@@ -26,7 +26,6 @@ const cookieParser = require("cookie-parser");
 
 router.use(cookieParser("user"));
 
-const prisma = new PrismaClient();
 
 // count total number of personal_info records
 router.get("/", (req, res) => {
@@ -188,9 +187,9 @@ router.post(
 
     try {
       if (result.isEmpty()) {
-        // const dateString = new Date(
-        //   `${date_hired}T00:00:00.000Z`
-        // ).toISOString();
+        const dateString = new Date(
+          `${date_hired}T00:00:00.000Z`
+        ).toISOString();
 
         const isCardNumber = await prisma.work_info.findUnique({
           where: {
@@ -208,7 +207,7 @@ router.post(
               personal_info_id: personal_info_id,
               department: department,
               job_title: job_title,
-              date_hired: date_hired,
+              date_hired: dateString,
               account_number: account_number,
               card_number: card_number,
               position_status: position_status,
@@ -228,8 +227,6 @@ router.post(
       res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect();
     }
   }
 );

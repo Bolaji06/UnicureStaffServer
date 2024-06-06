@@ -1,15 +1,13 @@
 const express = require("express");
 const { checkSchema, validationResult } = require("express-validator");
 const { adminLogin } = require("../utils/validation");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require('../utils/prismaClient')
 const bcrypt = require("bcrypt");
-const session = require("express-session");
 const jwt = require("jsonwebtoken");
 
-const prisma = new PrismaClient();
 const router = express.Router();
 
-router.post("/admin-login", checkSchema(adminLogin), async (req, res) => {
+router.post("/login", checkSchema(adminLogin), async (req, res) => {
   const { username, password } = req.body;
   const result = validationResult(req);
 
@@ -31,6 +29,12 @@ router.post("/admin-login", checkSchema(adminLogin), async (req, res) => {
     const dbEmail = admin[0].email;
     const validatePassword = await bcrypt.compare(password, dbPassword); // return boolean
     const validateUsername = username === admin[0].username;
+
+    // Do not login when email verification token is defined 
+    if (admin[0].verificationEmailToken){
+      return res.status(401).json({ success: false, message: 'your email has not been verified' });
+    }
+
     const payload = {
       username: username,
       email: dbEmail,

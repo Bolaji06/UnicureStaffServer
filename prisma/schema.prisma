@@ -42,6 +42,7 @@ model admin {
   password String @db.VarChar(100)
   resetPasswordToken String? @unique
   resetPasswordExpiry DateTime?
+  verificationEmailToken String? @unique
 }
 
 enum Role {

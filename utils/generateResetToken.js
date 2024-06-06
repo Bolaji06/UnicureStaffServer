@@ -10,4 +10,12 @@ function generateResetToken(){
     }
 }
 
-module.exports = generateResetToken
+function generateVerificationToken(){
+    const token = crypto.randomBytes(10).toString('hex');
+    return token;
+}
+
+module.exports = {
+    generateResetToken,
+    generateVerificationToken,
+}
