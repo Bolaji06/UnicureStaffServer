@@ -1,13 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const prisma = require('../utils/prismaClient')
+const prisma = require("../utils/prismaClient");
 const bcrypt = require("bcrypt");
 const { checkSchema, validationResult } = require("express-validator");
 const { adminRegistrationSchema } = require("../utils/validation");
-const { generateVerificationToken } = require("../utils/generateResetToken");
+const { generateVerificationToken } = require("../utils/generateToken");
 const sendEmail = require("../utils/sendEmail");
-
-
 
 router.post(
   "/register-admin",
@@ -42,7 +40,7 @@ router.post(
         const saltRound = 10;
         const salt = await bcrypt.genSalt(saltRound);
         const hashPassword = await bcrypt.hash(password, salt);
-        const token  = generateVerificationToken();
+        const token = generateVerificationToken();
 
         const subject = "Verify your email";
         const message = "Kindly verify your email";
