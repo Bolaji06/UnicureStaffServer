@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { PrismaClient, Prisma } = require("@prisma/client");
+const prisma = require("../utils/prismaClient");
 const bcrypt = require("bcrypt");
 const { checkSchema, validationResult } = require("express-validator");
 const { adminRegistrationSchema } = require("../utils/validation");
-
-const prisma = new PrismaClient();
+const { generateVerificationToken } = require("../utils/generateToken");
+const sendEmail = require("../utils/sendEmail");
 
 router.post(
   "/register-admin",
@@ -31,15 +31,23 @@ router.post(
     if (result.isEmpty()) {
       // if username and email already exists
       if (isUser.length) {
-       return res.status(400).json({
+        return res.status(400).json({
           success: false,
           message: "username or email already exist ",
-        });  
+        });
       } else {
         // hash the password
         const saltRound = 10;
         const salt = await bcrypt.genSalt(saltRound);
         const hashPassword = await bcrypt.hash(password, salt);
+        const token = generateVerificationToken();
+
+        const subject = "Verify your email";
+        const message = "Kindly verify your email";
+        const html = ` <h3>Click on the verification button below</h3>
+        <a href="https://localhost:7000/verify-email?token=${token}">
+          <button>Verify Email</button>
+        </a>`;
 
         // create a new user
         try {
@@ -48,15 +56,15 @@ router.post(
               username: username,
               email: email,
               password: hashPassword,
+              verificationEmailToken: token,
             },
           });
-          await prisma.$disconnect(); // disconnect after creating new user
-          res.status(201).json({ success: true, message: "user created" });
+
+          sendEmail(email, subject, message, html);
+          res.status(201).json({ success: true, message: "verify email" });
         } catch (err) {
           res.status(500).json({ error: "Internal Server Error" });
-          await prisma.$disconnect(); // disconnect from database if there after error
           console.log(err);
-          process.exit(1);
         }
       }
     } else {

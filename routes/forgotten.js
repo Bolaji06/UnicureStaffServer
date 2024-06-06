@@ -1,14 +1,13 @@
 const express = require("express");
 const { checkSchema, validationResult } = require("express-validator");
 const { forgotten } = require("../utils/validation");
-const { createHmac } = require("node:crypto");
 
-const { PrismaClient } = require("@prisma/client");
+const prisma = require('../utils/prismaClient')
 const sendEmail = require("../utils/sendEmail");
-const generateResetToken = require("../utils/generateResetToken");
+const {generateResetToken} = require("../utils/generateToken");
 
 const router = express.Router();
-const prisma = new PrismaClient();
+
 
 router.post("/forgotten", checkSchema(forgotten), async (req, res) => {
   const { email } = req.body;
@@ -43,19 +42,15 @@ router.post("/forgotten", checkSchema(forgotten), async (req, res) => {
 
     const subject = "Verify email for password reset";
     const message =
-      "You receiving this message because you're about to reset your password";
+      "You\'re receiving this message because you're about to reset your password";
     const html = ` <h3>Click on the verification button below</h3>
-        <a href="https://localhost:7000/reset-password?token=${token}">
+        <a href="http://localhost:3000/reset-password?token=${token}">
           <button>Verify Email</button>
         </a>`;
     sendEmail(email, subject, message, html);
     res.status(200).json({ success: true, message: "email sent" });
-
-    await prisma.$disconnect();
   } catch (err) {
     console.log(err);
-    await prisma.$disconnect();
-    process.exit(1);
   }
 });
 
